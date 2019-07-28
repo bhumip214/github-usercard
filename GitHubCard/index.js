@@ -16,12 +16,19 @@
 
 const cardsElement = document.querySelector(".cards");
 
-axios
-  .get("https://api.github.com/users/bhumip214")
+function fetchGithubProfile(username) {
+  return axios.get(`https://api.github.com/users/${username}`);
+}
+
+function renderGithubProfile(data) {
+  const cardElement = githubUserComponent(data);
+  cardsElement.appendChild(cardElement);
+}
+
+fetchGithubProfile("bhumip214")
   .then(response => {
     //console.log(response.data);
-    const cardElement = githubUserComponent(response.data);
-    cardsElement.appendChild(cardElement);
+    renderGithubProfile(response.data);
     showFollowers();
   })
   .catch(err => {
@@ -50,13 +57,12 @@ function showFollowers() {
   // Promise<GitHubUsers[]>
   Promise.all(
     followersArray.map(follower => {
-      return axios.get(`https://api.github.com/users/${follower}`);
+      return fetchGithubProfile(follower);
     })
   )
     .then(res => {
       res.map(followerResponse => {
-        const cardElement = githubUserComponent(followerResponse.data);
-        cardsElement.appendChild(cardElement);
+        renderGithubProfile(followerResponse.data);
       });
     })
     .catch(err => {
