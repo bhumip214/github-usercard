@@ -19,7 +19,7 @@ const cardsElement = document.querySelector(".cards");
 axios
   .get("https://api.github.com/users/bhumip214")
   .then(response => {
-    console.log(response.data);
+    //console.log(response.data);
     const cardElement = githubUserComponent(response.data);
     cardsElement.appendChild(cardElement);
   })
@@ -45,17 +45,21 @@ const followersArray = [
   "bigknell"
 ];
 
-followersArray.map(follower => {
-  return axios
-    .get(`https://api.github.com/users/${follower}`)
-    .then(res => {
-      const cardElement = githubUserComponent(res.data);
+// Promise<GitHubUsers[]>
+Promise.all(
+  followersArray.map(follower => {
+    return axios.get(`https://api.github.com/users/${follower}`);
+  })
+)
+  .then(res => {
+    res.map(followerResponse => {
+      const cardElement = githubUserComponent(followerResponse.data);
       cardsElement.appendChild(cardElement);
-    })
-    .catch(err => {
-      console.error("Error:", err);
     });
-});
+  })
+  .catch(err => {
+    console.error("Error:", err);
+  });
 
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
