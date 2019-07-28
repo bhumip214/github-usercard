@@ -22,6 +22,7 @@ axios
     //console.log(response.data);
     const cardElement = githubUserComponent(response.data);
     cardsElement.appendChild(cardElement);
+    showFollowers();
   })
   .catch(err => {
     console.log("Error:", err);
@@ -37,29 +38,31 @@ axios
           user, and adding that card to the DOM.
 */
 
-const followersArray = [
-  "tetondan",
-  "dustinmyers",
-  "justsml",
-  "luishrd",
-  "bigknell"
-];
+function showFollowers() {
+  const followersArray = [
+    "tetondan",
+    "dustinmyers",
+    "justsml",
+    "luishrd",
+    "bigknell"
+  ];
 
-// Promise<GitHubUsers[]>
-Promise.all(
-  followersArray.map(follower => {
-    return axios.get(`https://api.github.com/users/${follower}`);
-  })
-)
-  .then(res => {
-    res.map(followerResponse => {
-      const cardElement = githubUserComponent(followerResponse.data);
-      cardsElement.appendChild(cardElement);
+  // Promise<GitHubUsers[]>
+  Promise.all(
+    followersArray.map(follower => {
+      return axios.get(`https://api.github.com/users/${follower}`);
+    })
+  )
+    .then(res => {
+      res.map(followerResponse => {
+        const cardElement = githubUserComponent(followerResponse.data);
+        cardsElement.appendChild(cardElement);
+      });
+    })
+    .catch(err => {
+      console.error("Error:", err);
     });
-  })
-  .catch(err => {
-    console.error("Error:", err);
-  });
+}
 
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
