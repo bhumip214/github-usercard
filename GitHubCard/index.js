@@ -27,10 +27,15 @@ function renderGithubProfile(data) {
 
 fetchGithubProfile("bhumip214")
   .then(response => {
-    //console.log(response.data);
+    console.log(response.data);
     renderGithubProfile(response.data);
-    showFollowers();
+    return axios.get(response.data.followers_url);
   })
+  .then(res => {
+    showFollowers(res.data);
+    console.log(res.data);
+  })
+
   .catch(err => {
     console.log("Error:", err);
   });
@@ -45,21 +50,13 @@ fetchGithubProfile("bhumip214")
           user, and adding that card to the DOM.
 */
 
-function showFollowers() {
-  const followersArray = [
-    "tetondan",
-    "dustinmyers",
-    "justsml",
-    "luishrd",
-    "bigknell"
-  ];
-
+function showFollowers(followers) {
   // Promise<GitHubUsers[]>
-  Promise.all(
-    followersArray.map(follower => {
-      return fetchGithubProfile(follower);
-    })
-  )
+  const followerPromises = followers.map(follower => {
+    return fetchGithubProfile(follower.login);
+  });
+
+  Promise.all(followerPromises)
     .then(res => {
       res.map(followerResponse => {
         renderGithubProfile(followerResponse.data);
@@ -68,6 +65,28 @@ function showFollowers() {
     .catch(err => {
       console.error("Error:", err);
     });
+  // const followersArray = [
+  //   "tetondan",
+  //   "dustinmyers",
+  //   "justsml",
+  //   "luishrd",
+  //   "bigknell"
+  // ];
+
+  // // Promise<GitHubUsers[]>
+  // const followerPromises = followersArray.map(follower => {
+  //   return fetchGithubProfile(follower);
+  // });
+
+  // Promise.all(followerPromises)
+  //   .then(res => {
+  //     res.map(followerResponse => {
+  //       renderGithubProfile(followerResponse.data);
+  //     });
+  //   })
+  //   .catch(err => {
+  //     console.error("Error:", err);
+  //   });
 }
 
 /* Step 3: Create a function that accepts a single object as its only argument,
