@@ -25,20 +25,36 @@ function renderGithubProfile(data) {
   cardsElement.appendChild(cardElement);
 }
 
-fetchGithubProfile("bhumip214")
-  .then(response => {
-    console.log(response.data);
-    renderGithubProfile(response.data);
-    return axios.get(response.data.followers_url);
-  })
-  .then(res => {
-    showFollowers(res.data);
+async function main() {
+  try {
+    const res = await fetchGithubProfile("bhumip214");
     console.log(res.data);
-  })
+    renderGithubProfile(res.data);
 
-  .catch(err => {
-    console.log("Error:", err);
-  });
+    const followerRes = await axios.get(res.data.followers_url);
+    console.log(followerRes);
+    showFollowers(followerRes.data);
+  } catch (error) {
+    console.log("Error:", error);
+  }
+}
+
+main();
+
+// fetchGithubProfile("bhumip214")
+//   .then(response => {
+//     console.log(response.data);
+//     renderGithubProfile(response.data);
+//     return axios.get(response.data.followers_url);
+//   })
+//   .then(res => {
+//     showFollowers(res.data);
+//     console.log(res.data);
+//   })
+
+//   .catch(err => {
+//     console.log("Error:", err);
+//   });
 
 /* Step 5: Now that you have your own card getting added to the DOM, either 
           follow this link in your browser https://api.github.com/users/<Your github name>/followers 
@@ -50,21 +66,21 @@ fetchGithubProfile("bhumip214")
           user, and adding that card to the DOM.
 */
 
-function showFollowers(followers) {
-  // Promise<GitHubUsers[]>
-  const followerPromises = followers.map(follower => {
-    return fetchGithubProfile(follower.login);
-  });
-
-  Promise.all(followerPromises)
-    .then(res => {
-      res.map(followerResponse => {
-        renderGithubProfile(followerResponse.data);
-      });
-    })
-    .catch(err => {
-      console.error("Error:", err);
+async function showFollowers(followers) {
+  try {
+    // Promise<GitHubUsers[]>
+    const followerPromises = followers.map(follower => {
+      return fetchGithubProfile(follower.login);
     });
+
+    const res = await Promise.all(followerPromises);
+    res.map(followerResponse => {
+      renderGithubProfile(followerResponse.data);
+    });
+  } catch (error) {
+    console.log("Error:", error);
+  }
+
   // const followersArray = [
   //   "tetondan",
   //   "dustinmyers",
